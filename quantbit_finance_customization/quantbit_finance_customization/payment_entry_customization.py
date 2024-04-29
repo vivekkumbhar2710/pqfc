@@ -12,7 +12,7 @@ def get_payment_references(party,party_type):
                 field_list=['name','grand_total','outstanding_amount',"return_against","base_net_total","net_total"]
             else:
                 doctype_name="Supplier"
-                field_list=['name','grand_total','outstanding_amount',"return_against","taxes_and_charges_deducted","total"]
+                field_list=['name','grand_total','outstanding_amount',"return_against","taxes_and_charges_deducted","total" ,'bill_no','bill_date']
             doc = frappe.get_all(doctype, {doctype_name: party, 'docstatus': 1},field_list)
             if doc:
                 for entry in doc:
@@ -30,8 +30,12 @@ def get_payment_references(party,party_type):
                         
                         if doctype =="Purchase Invoice":
                             entry["taxes_and_charges_deducted"]=entry["taxes_and_charges_deducted"] if entry["taxes_and_charges_deducted"] else None
+                            entry["bill_no"]=entry["bill_no"] if entry["bill_no"] else None
+                            entry["bill_date"]=entry["bill_date"] if entry["bill_date"] else None
                         else:
-                            entry["taxes_and_charges_deducted"]=None  
+                            entry["taxes_and_charges_deducted"]=None
+                            entry["bill_no"]=None
+                            entry["bill_date"]=None 
                             
                         updated_doc.append(entry)
         else:
@@ -51,10 +55,12 @@ def get_payment_references(party,party_type):
                     entry["name"] = entry["parent"]
                     entry["grand_total"] = entry["credit_in_account_currency"] or entry["debit_in_account_currency"]
                     entry["outstanding_amount"] = outstanding_amt
-                    entry["ref_doctype"]=entry["reference_name"] if entry["reference_name"] else None
+                    entry["ref_doctype"]=  None #entry["reference_name"] if entry["reference_name"] else None
                     entry["base_net_total"]=None
                     entry["total"]=None  
-                    entry["taxes_and_charges_deducted"]=None  
+                    entry["taxes_and_charges_deducted"]=None
+                    entry["bill_no"]=None
+                    entry["bill_date"]=None 
                     updated_doc.append(entry)
     return updated_doc
 
